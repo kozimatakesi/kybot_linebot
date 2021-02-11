@@ -12,6 +12,33 @@ function doPost(e) {
   const spreadsheet = SpreadsheetApp.openById('1L7OGY_H9wBNogR5XVie39e0Y-KVSoMXAqtILzqrJP2E');
 
   if(input.type == 'text') {
+    //検索機能
+    if(input.text.match('#')){
+      var searchWord = input.text.slice(1);
+      var searchCellsA = [];
+      var searchCellsB = [];
+      for(var j = 0; j < 3; j++){
+        var sheet = spreadsheet.getSheets()[j];
+        var lastRow = sheet.getLastRow();
+        for(var i = 1; i < lastRow; i++){
+          var searchCell = sheet.getRange(`A${i}`).getValue();
+          if(searchCell.match(searchWord)){
+            searchCellsA.push(searchCell);
+            searchCellsB.push(sheet.getRange(`B${i}`).getValue());
+          }
+        }
+      }
+      var random = Math.floor( Math.random() * searchCellsA.length );
+      const cellNumber = random;
+      if(searchCellsA.length === 0){
+        message = `「${searchWord}」を検索した結果`;
+        message1 = 'データベースに見当たりませんでした'
+      } else {
+        message = `【どんな危険が潜んでいるか】\n${searchCellsA[cellNumber]}`;
+        message1 = `【私ならこうする】\n${searchCellsB[cellNumber]}`;
+      }
+    }
+    //投稿機能
     if(input.text.match('!')) {
       const firstNewLine = input.text.indexOf('\n');
       const selectSheet = input.text.slice(1, firstNewLine);
